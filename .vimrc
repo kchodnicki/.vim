@@ -37,6 +37,13 @@ Plugin 'chriskempson/base16-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
+
+" Pathogen load
+filetype off
+
+call pathogen#infect()
+call pathogen#helptags()
+
 filetype plugin indent on    " required
 
 " To ignore plugin indent changes, instead use:
@@ -51,12 +58,61 @@ filetype plugin indent on    " required
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
 
+" new leaderkey
+let mapleader = "\<Space>"
+
+" PEP-8 standard with vertical split
 set lines=35 columns=150
+
+" show line numbers
 set number
+
+" clear font
 set guifont=Menlo\ Regular:h18
+
+" mark PEP-8 line lenght
 set colorcolumn=72
-filetype plugin indent on
+highlight ColorColumn ctermbg=233
 syntax on
 set encoding=utf-8
 set numberwidth=4
+
+" automatic relaod of vimrc
+autocmd bufwritepost .vimrc source $MYVIMRC
+
+" toggle paste in vim
+set pastetoggle=<F2>
+
+" map tabs
+map <Leader>j <esc>:tabprevious<CR>
+map <Leader>k <esc>:tabnext<CR>
+
+" fast sort
+vnoremap <Leader>s :sort<CR>
+
+" easier block of code intent
+vnoremap < <gv
+vnoremap > >gv
+
+" remove trailing whitespace from python code
+autocmd BufWritePre * :%s/\s\+$//e
+
+" spaces not tabs
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set shiftround
+set expandtab
+
+" improve search
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+" split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
 
