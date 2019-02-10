@@ -5,16 +5,26 @@ function! BuildYCM(info)
 endfunction
 
 call plug#begin('~/.vim/plugged')
+Plug 'valloric/youcompleteme', { 'do': function('BuildYCM') }
+Plug 'mdempsky/gocode'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/denite.nvim'
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'jodosha/vim-godebug'
+Plug 'sebdah/vim-delve'
+Plug 'Shougo/vimshell.vim'
+Plug 'Shougo/vimproc.vim'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'flazz/vim-colorschemes'
 Plug 'junegunn/vim-easy-align'
 Plug 'https://github.com/junegunn/vim-github-dashboard.git'
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 Plug 'fatih/vim-go', { 'tag': '*' , 'do': ':GoInstallBinaries' }
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'valloric/youcompleteme', { 'do': function('BuildYCM') }
 Plug 'SirVer/ultisnips'
 Plug 'tpope/vim-fugitive'
 Plug 'mhinz/vim-signify'          " displays VCS changes
@@ -59,14 +69,14 @@ let g:lightline = {
   \     }
   \ }
 
+" YCM - YouCompleteMe
+let g:ycm_key_invoke_completion = '<C-Space>'
+let g:ycm_min_num_of_chars_for_completion = 3
 
 " Ack
 cnoreabbrev Ack Ack!
 nnoremap <Leader>a :Ack!<Space>
 set infercase
-
-" Mouse ( see :help mouse-using )
-set mouse=nvic
 
 " NERDTree toggle
 map <C-n> :NERDTreeToggle<CR>
@@ -77,21 +87,11 @@ set nu rnu
 set nocp
 set so=999
 set cursorline
-set wildmenu
-set wildmode=list:longest,full
 set ruler
 
 " This is totally awesome - remap jj to escape in insert mode.  You'll never type jj anyway, so it's great!
 inoremap jj <esc>
 nnoremap JJJJ <nop>
-
-" Ignore compiled files
-set wildignore=*.o,*~,*.pyc
-if has("win16") || has("win32")
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
-else
-    set wildignore+=.git\*,.hg\*,.svn\*
-endif
 
 " Show (partial) commands (or size of selection in Visual mode) in the status line
 set showcmd
@@ -111,14 +111,8 @@ set foldcolumn=0
 " Show matching brackets when text indicator is over them
 set showmatch
 
-" How many tenths of a second to blink when matching brackets
-set mat=2
-
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
-
-" Use Unix as the standard file type
-set ffs=unix,dos,mac
 
 " tab
 set expandtab
@@ -190,16 +184,14 @@ let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_SR = "\<Esc>]50;CursorShape=2\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
-" YCM - YouCompleteMe
-let g:ycm_key_invoke_completion = '<C-Space>'
-let g:ycm_min_num_of_chars_for_completion = 2
-
 " ALE
 " ALE has some requirements - > Vim 8.0 (compiled with python) is a must. Reinstalling vim from source might be needed. Take a look at YCM docs for that.
 " Also the linters/fixers you run such as eslint, flake8, autopep8, isort have to be manually installed via pip/yarn/npm.
 let g:ale_linters = { 'python': ['flake8'] , }
 let g:ale_fixers = { 'python': ['autopep8', 'isort'], }
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_sign_error = '‚§´'
+let g:ale_sign_warning = '‚ö†'
 nnoremap <Leader>f :ALEFix<CR>
 "=================================Golang=======================================
 function! Golang()
@@ -213,12 +205,16 @@ function! Golang()
     let g:tagbar_width = 80
 
     " Vim-go
-    nnoremap <silent> <Leader>c :GoCoverage<CR>
-    nnoremap <silent> <Leader>v :GoCoverageClear<CR>
-    nnoremap <silent> <Leader>g :GoTestFunc<CR>
     autocmd FileType go nmap <Leader>ta <Plug>(go-test)
     autocmd FileType go nmap <Leader>tf <Plug>(go-test-func)
     autocmd FileType go nmap <Leader>i <Plug>(go-info)
+
+    au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
+    au Filetype go nmap <leader>gah <Plug>(go-alternate-split)
+    au Filetype go nmap <leader>gav <Plug>(go-alternate-vertical)
+
+    au FileType go nmap <F9> :GoCoverageToggle -short<cr>
+    au FileType go nmap <F12> <Plug>(go-def)
 
     " Why am I forced to do this? I thought the vim-go plugin automatically overrides the vim defaults?
     nnoremap <silent> <C-]> :GoDef<CR>
@@ -235,7 +231,6 @@ function! Golang()
     let g:go_highlight_methods = 1
     let g:go_metalinter_autosave = 1
     let g:go_metalinter_deadline = "15s"
-    let g:go_list_type = "quickfix"
     let g:go_auto_type_info = 1
     let g:go_auto_sameids = 1
 
@@ -244,7 +239,7 @@ endfunction
 call Golang()
 
 " Reaload vimrc
-autocmd! bufwritepost .vimrc source %
+autocmd! bufwritepost init.vim source %
 
 " Gotags
 let g:tagbar_type_go = {
@@ -278,14 +273,6 @@ let g:tagbar_type_go = {
 " Airline
 let g:airline_section_c = '%F'
 let g:airline_powerline_fonts = 1
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = '☰'
-let g:airline_symbols.maxlinenr = ''
 let g:airline_skip_empty_sections = 1
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#branch#enabled = 1
@@ -293,3 +280,29 @@ let g:airline#extensions#fugitiveline#enabled = 1
 
 " CtrlP
 let g:ctrlp_custom_ignore = 'vendor\|node_modules'
+
+" Colorscheme
+colorscheme gruvbox
+
+" Turn off preview
+set completeopt-=preview
+
+" Snippwts
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
