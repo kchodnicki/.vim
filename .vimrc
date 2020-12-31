@@ -11,37 +11,43 @@ Plug 'junegunn/vim-easy-align'
 Plug 'scrooloose/nerdtree'
 Plug 'fatih/vim-go'
 Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'stsewd/fzf-checkout.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'scrooloose/nerdtree'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-rooter'
 Plug 'mattn/webapi-vim'
 Plug 'jacoborus/tender.vim'
+Plug 'mileszs/ack.vim'
+Plug 'gruvbox-community/gruvbox'
+Plug 'chriskempson/base16-vim'
 
 " Initialize plugin system
 call plug#end()
 
-source ~/.vim_runtime/vimrcs/basic.vim
-source ~/.vim_runtime/vimrcs/filetypes.vim
-source ~/.vim_runtime/vimrcs/plugins_config.vim
-source ~/.vim_runtime/vimrcs/extended.vim
-
-try
-source ~/.vim_runtime/my_configs.vim
-catch
-endtry
-
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set timeout timeoutlen=3000 ttimeoutlen=100
-let g:mapleader = ","
-colo tender
-set relativenumber
-nnoremap j jzz
-nnoremap k kzz
-imap jk <Esc>
-imap kj <Esc>
+set autoread
+set noswapfile
+set autochdir
+set smartcase
+let g:mapleader=","
+set background=dark
+set termguicolors
+" colo default
+" colo tender
+colo gruvbox
+let g:gruvbox_contrast_dark='hard'
+let g:solarized_termcolors=256
+:set number relativenumber
+:set nu rnu
+inoremap jk <Esc>`^
+inoremap kj <Esc>`^
 
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_SR = "\<Esc>]50;CursorShape=2\x7"
@@ -53,6 +59,13 @@ let g:go_debug_windows = {
       \ 'vars':       'rightbelow 60vnew',
       \ 'stack':      'rightbelow 10new',
 \ }
+
+let g:fzf_layout = { 'window' : { 'width' : 0.8, 'height': 0.8 } }
+
+" git mappings
+nmap <leader>gs :G<CR>
+nmap <leader>gf :diffget //2<CR>
+nmap <leader>gj :diffget //3<CR>
 
 " -------------------------------------------------------------------------------------------------
 " coc.nvim default settings
@@ -127,14 +140,20 @@ let g:go_def_mapping_enabled = 0
 " -------------------------------------------------------------------------------------------------
 " airline
 " -------------------------------------------------------------------------------------------------
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#tabline#fnamemod = ':.'
+let g:airline_powerline_fonts = 1
+let g:airline_theme='gruvbox'
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+
+"TABLINE:
+let g:airline#extensions#tabline#enabled = 1           " enable airline tabline
+let g:airline#extensions#tabline#show_close_button = 0 " remove 'X' at the end of the tabline
+let g:airline#extensions#tabline#tabs_label = 't'       " can put text here like TABS o denote buffers (I clear it so nothing is shown)
+let g:airline#extensions#tabline#buffers_label = 'b'    " can put text here like BUFFERS to denote tabs (I clear it so nothing is shown)
+let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#tabline#fnamecollapse = 0
-let g:airline_powerline_fonts = 1 
-let g:airline_theme='tender'
-let g:hybrid_custom_term_colors = 1
-let g:hybrid_reduced_contrast = 1
+let g:airline#extensions#tabline#fnamemod = ':.'       " disable file paths in the tab
+let g:airline#extensions#tabline#tab_min_count = 2     " minimum of 2 tabs needed to display the tabline
+let g:airline#extensions#tabline#show_tab_type = 0     " disables the weird ornage arrow on the tabline
 
 " -------------------------------------------------------------------------------------------------
 "  mappings
@@ -142,7 +161,7 @@ let g:hybrid_reduced_contrast = 1
 
 syntax enable                           " Enables syntax highlighing
 set nowrap                              " Display long lines as just one line
-set encoding=utf-8                      " The encoding displayed 
+set encoding=utf-8                      " The encoding displayed
 set pumheight=10                        " Makes popup menu smaller
 set fileencoding=utf-8                  " The encoding written to file
 set ruler              			            " Show the cursor position all the time
@@ -159,7 +178,7 @@ set expandtab                           " Converts tabs to spaces
 set smartindent                         " Makes indenting smart
 set laststatus=0                        " Always display the status line
 set cursorline                          " Enable highlighting of the current line
-set showtabline=2                       " Always show tabs 
+set showtabline=2                       " Always show tabs
 set nobackup                            " This is recommended by coc
 set nowritebackup                       " This is recommended by coc
 set timeoutlen=100                      " By default timeoutlen is 1000 ms
@@ -167,8 +186,6 @@ set formatoptions-=cro                  " Stop newline continution of comments
 set clipboard=unnamedplus               " Copy paste between vim and everything else
 set noshowmode                          " We don't need to see things like -- INSERT -- anymore
 
-autocmd VimEnter * NERDTree
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeWinPos = "left"
 let base16colorspace=256
 let g:spacegray_underline_search = 1
